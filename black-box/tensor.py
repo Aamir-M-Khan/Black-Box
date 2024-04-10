@@ -5,4 +5,4 @@ class Tensor:
         self.value = np.array(value)
 
     def __str__(self):
-        return str(self.value.__str__())
+        return str(self.value)
