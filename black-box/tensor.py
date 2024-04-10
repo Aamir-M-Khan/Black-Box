@@ -13,3 +13,7 @@ class Tensor:
     def __add__(self, other):
         return Tensor(self.value + other.value)
     
+    def __sub__(self, other):
+        return Tensor(self.value - other.value)
+    
+    
