@@ -38,4 +38,22 @@ class Tensor:
                         autograd = True)
         return Tensor(self.value * other.value)
     
+    def backward(self, gradient=None):
+        if not self.requires_grad:
+            return
+        
+        if gradient is None:
+            gradient = Tensor(np.ones_like(self.data))
+
+        self.gradient = gradient
+
+        operations = [self]
+
+        while operations:
+            op = operations.pop()
+            if op.gradient is None:
+                continue
+            op.backward()
+            operations.extend(op.parents)
+
 
