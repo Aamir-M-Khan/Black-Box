@@ -1,9 +1,6 @@
 import numpy as np
 
-class Tensor:
-    
-    stack = []  # Class-level stack to track operations
-    
+class Tensor:   
     def __init__(self, data, requires_grad=False, creators=None, creation_op=None, id=None):
         self.data = np.array(data)
         self.requires_grad = requires_grad
@@ -22,24 +19,7 @@ class Tensor:
                 if self.id not in c.children:
                     c.children[self.id] = 1
                 else:
-                    c.children[self.id] += 1
-        
-        # Push this tensor and its creation operation onto the stack
-    #
-        #Tensor.push_stack()
-
-    @classmethod
-    def push_stack(cls):
-        # Pushes the current tensor and its creation operation onto the stack
-        if hasattr(cls, 'stack'):
-            cls.stack.append((id(cls), cls.creation_op))
-
-    @classmethod
-    def pop_stack(cls):
-        # Pops the top element from the stack
-        if hasattr(cls, 'stack') and cls.stack:
-            return cls.stack.pop()
-        return None
+                    c.children[self.id] += 1    
 
     def all_children_grads_accounted_for(self):
         for id, cnt in self.children.items():
@@ -243,3 +223,5 @@ class Neg:
     @staticmethod
     def backward(grad, tensor):
         tensor.creators[0].backward(Tensor(grad.data * -1))
+
+class 
