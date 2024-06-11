@@ -3,6 +3,9 @@ import numpy as np
 
 class SGD:
     def __init__(self, parameters, lr=1e-3):
+        """
+        Initialize Stochastic Gradient Descent
+        """
         self.parameters = parameters
         self.lr = lr
 
