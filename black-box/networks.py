@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-import tensor as T
+import tensor as Tensor
 
 
 class Parameter:
@@ -130,15 +130,25 @@ class Sequential(Module):
             return layer(input)
             
 
-class Linear(Layer):
-    pass
+class Linear(Module):
+    def __init__(self, input_size, output_size, bias):
+        super().__init__()
+        self.W = Tensor(np.random.randn(input_size, output_size)/np.sqrt(input_size), requires_grad=True)
+        self.bias = Tensor(np.random.randn(output_size)/np.sqrt(input_size))  # TODO:check this
+        self.is_bias = bias
+
+    def forward(self, input_feature):
+        y = input_feature@self.W
+        if self.is_bias:
+            y += self.bias
+        return y
 
 
 #### Activation Functions
-class ReLU(Layer):
+class ReLU(Module):
     pass
 
-class Sigmoid(Layer):
+class Sigmoid(Module):
     def __init__(self):
         super().__init__()
 
@@ -148,13 +158,13 @@ class Sigmoid(Layer):
 
 
 #### Loss Functions
-class CrossEntropyLoss(Layer):
+class CrossEntropyLoss(Module):
     pass
 
-class Softmax(Layer):
+class Softmax(Module):
     pass
 
-class MSELoss(Layer):
+class MSELoss(Module):
     pass
 
 
