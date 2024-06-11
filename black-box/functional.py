@@ -101,3 +101,44 @@ def conv2d(image, kernel, padding=0):
 
     return result_conv
 
+def transposed_conv2d(image, kernel, stride=1, padding=0):
+    """
+    Perform 2D transposed convolution on an image using a kernel.
+
+    Arguments:
+    image -- 2D numpy array, representing the input image.
+    kernel -- 2D numpy array, represnting the transposed convolution kernel.
+    stride -- integer, stride of the transposed convolution.
+    padding -- integer, amount of padding to add around the image.
+
+    Returns:
+    result -- 2D numpy array, result of the transposed convolution.
+    """
+    # Get dimension of the image and the kernel
+    image_height, image_width = image.shape
+    kernel_height, kernel_width = kernel.shape
+
+    # Calculate the output dimension
+    output_height = (image_height - 1) * stride + kernel_height -2*padding
+    output_width = (image_width - 1) * stride + kernel_width - 2 *padding
+
+    # Initialize the result
+    result = np.zeros(output_height, output_width)
+
+    # Add padding to the result
+    padded_result = np.pad(result, pad_width=padding, mode='constant', constant_values=0)
+
+    # Perform the transposed convolution
+    for y in range(image_height):
+        for x in range(image_width):
+            padded_result[y*stride:y*stride+kernel_height, x*stride:x*stride+kernel_width] += image[y, x] * kernel
+
+        
+    # Remove padding
+    if padding > 0:
+        result = padded_result[padding:-padding, padding:-padding]
+    else:
+        result = padded_result
+
+    return result
+
