@@ -176,3 +176,46 @@ def conv3d(volume, kernel, padding=0):
 
     return result
  
+def transposed_conv3d(volume, kernel, stride=1, padding=0):
+    """
+    Perform 3D transposed convolution on a volume using a kernel.
+
+    Arguments:
+    volume -- 3D numpy array, representing the input volume.
+    kernel -- 3D numpy array, representing the transposed convolution kernel.
+    stride -- integer, stride of the transposed convolution
+    padding -- integer, amount of padding to add
+
+    Returns:
+    result -- 3D numpy array, result of the 3D transposed convolution
+    """
+    volume_depth, volume_height, volume_width = volume.shape
+    kernel_depth, kernel_height, kernel_width = kernel.shape
+
+    # Calculate the output dimensions
+    output_depth = (volume_depth - 1) * stride + kernel_depth - 2 * padding
+    output_height = (volume_height - 1) * stride + kernel_height - 2 * padding
+    output_width = (volume_width - 1) * stride + kernel_width - 2 * padding
+
+    # Initialize the result
+    result = np.zeros(output_depth, output_height, output_width)
+
+    # Add padding to the result
+    padded_result = np.pad(result, pad_width=padding, mode='constant', constant_values=0)
+
+    # Perform the 3D transposed convolution
+    for d in range(volume_depth):
+        for h in range(volume_height):
+            for w in range(volume_width):
+                padded_result[d*stride:d*stride+kernel_depth,
+                               h*stride:h*stride+kernel_height,
+                               w*stride:w*stride+kernel_width] += volume[d, h, w] * kernel
+                
+    # Remove padding
+    if padding > 0:
+        result = padded_result[padding:-padding, padding:-padding, padding:-padding]
+    else:
+        result = padded_result
+
+    return result
+    
