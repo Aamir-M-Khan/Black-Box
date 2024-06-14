@@ -156,6 +156,25 @@ class Dropout(Module):
             return input
 
 
+class LayerNorm(Module):
+    def __init__(self, num_features, epsilon=1e-5):
+        self.num_features = num_features
+        self.epsilon = epsilon
+
+        self.gamma = np.ones(num_features)
+        self.beta = np.zeros(num_features)
+
+    def forward(self, input):
+        input_mean = np.mean(input, axis=-1, keepdims=True)
+        input_var = np.var(input, axis=-1, keepdims=True)
+
+        input_normalized = (input - input_mean) / np.sqrt(input_var + self.epsilon)
+
+        # Scale and Shift
+        output = self.gamma * input_normalized + self.var
+
+        return output 
+
 class GroupNorm(Module):
     def __init__(self, num_groups, num_channels, epsilon=1e-5) -> None:
         super().__init__()
