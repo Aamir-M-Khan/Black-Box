@@ -154,7 +154,41 @@ class Dropout(Module):
             return input * self.mask
         else:
             return input
-        
+
+
+class GroupNorm(Module):
+    def __init__(self, num_groups, num_channels, epsilon=1e-5) -> None:
+        super().__init__()
+        self.num_groups= num_groups
+        self.num_channels = num_channels
+        self.epsilon = epsilon
+
+        self.gamma = np.ones(num_channels)
+        self.beta = np.zeros(num_channels)
+
+    def forward(self, input):
+        N, C, H, W = input.shape
+        G = self.num_groups
+        assert C%G == 0, "num_channels must be divisble by num_groups"
+
+        # Rehape input to (N, G, C//G, H, W)
+        input = input.reshape(N, G, C//G, H, W)
+
+        # Compute mean and variance along the (N, G, H, W) dimensions
+        input_mean = np.mean(input, axis=(2, 3, 4), keepdims=True)
+        input_var = np.var(input, axis=(2, 3, 4), keepdims=True)
+
+        # Normalize the input
+        normalized_input = (input - input_mean) / np.sqrt(input_var + self.epsilon)
+
+        # Reshape the input back to (N, C, H, W)
+        normalized_input = normalized_input.reshape(N, C, H, W)
+
+        # Scale and Shift
+        out = self.gamma[:, None, None] * normalized_input + self.beta[:, None, None]
+
+        return out
+
 #### Activation Functions
 class ReLU(Module):
     pass
