@@ -155,7 +155,60 @@ class Dropout(Module):
         else:
             return input
 
+class BatchNorm1d:
+    def __init__(self, num_features, epsilon=1e-5, momentum=0.1) -> None:
+        self.num_features = num_features
+        self.epsilon = epsilon
+        self.momentum = momentum
 
+        self.gamma = np.ones(num_features)
+        self.beta = np.zeros(num_features)
+
+        self.running_mean = np.zeros(num_features)
+        self.running_var = np.ones(num_features)
+
+    def forward(self, input, training=True):
+        if training:
+            input_mean = np.mean(input, axis=0, keepdims=True)
+            input_var = np.var(input, axis=0, keepdims=True)
+
+            normalized_input = (input - input_mean) / np.sqrt(input_var + self.epsilon)
+
+            self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * input_mean.squeeze()
+            self.running_var = (1 - self.momentum) * self.running_var + self.momentum * input_var.squeeze()
+
+        else:
+            normalized_input = (input - self.running_mean) / np.sqrt(self.running_var + self.epsilon)
+
+        return self.gamma * normalized_input + self.beta 
+
+class BatchNorm2d:
+    def __init__(self, num_features, epsilon=1e-5, momentum=0.1) -> None:
+        self.num_features = num_features
+        self.epsilon = epsilon
+        self.momentum = momentum
+
+        self.gamma = np.ones(num_features)
+        self.beta = np.zeros(num_features)
+
+        self.running_mean = np.zeros(num_features)
+        self.running_var = np.ones(num_features)
+
+    def forward(self, input, training=True):
+        if training:
+            input_mean = np.mean(input, axis=(0, 2, 3), keepdims=True)
+            input_var = np.var(input, axis=(0, 2, 3), keepdims=True)
+
+            normalized_input = (input - input_mean) / np.sqrt(input_var + self.epsilon)
+
+            self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * input_mean.squeeze()
+            self.running_var = (1 - self.momentum) * self.running_var + self.momentum * input_var.squeeze()
+
+        else:
+            normalized_input = (input - self.running_mean[:, None, None]) / np.sqrt(self.running_var[:, None, None] + self.epsilon)
+
+        return self.gamma[:, None, None] * normalized_input + self.beta[:, None, None] 
+    
 class LayerNorm(Module):
     def __init__(self, num_features, epsilon=1e-5):
         self.num_features = num_features
