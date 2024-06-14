@@ -143,7 +143,18 @@ class Linear(Module):
             y += self.bias
         return y
 
+class Dropout(Module):
+    def __init__(self, p=0.5):
+        self.p = p
+        self.mask = None
 
+    def forward(self, input, training=True):
+        if training:
+            self.mask = np.random.binomial(1, 1 - self.p, size=input.shape) / (1- self.p)
+            return input * self.mask
+        else:
+            return input
+        
 #### Activation Functions
 class ReLU(Module):
     pass
@@ -167,5 +178,7 @@ class Softmax(Module):
 class MSELoss(Module):
     pass
 
+
+####
 
 
