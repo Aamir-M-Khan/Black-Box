@@ -222,3 +222,5 @@ def transposed_conv3d(volume, kernel, stride=1, padding=0):
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
+def step(x):
+    return np.where(x >= 0, 1, 0)
