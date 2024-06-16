@@ -236,3 +236,6 @@ def relu(x):
 
 def gaussian(x):
     return np.exp(-(x**2))
+
+def softplus(x): 
+    return np.log2(1 + np.exp(x))
