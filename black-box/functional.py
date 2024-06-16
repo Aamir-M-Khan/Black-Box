@@ -233,3 +233,6 @@ def arctan(x):
 
 def relu(x):
     return np.where(x > 0, x, 0)
+
+def gaussian(x):
+    return np.exp(-(x**2))
