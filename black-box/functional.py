@@ -227,3 +227,6 @@ def step(x):
 
 def tanh(x):
     return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+
+def arctan(x):
+    return np.arctan(x)
