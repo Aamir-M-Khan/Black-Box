@@ -224,3 +224,6 @@ def sigmoid(x):
 
 def step(x):
     return np.where(x >= 0, 1, 0)
+
+def tanh(x):
+    return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
