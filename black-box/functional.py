@@ -230,3 +230,6 @@ def tanh(x):
 
 def arctan(x):
     return np.arctan(x)
+
+def relu(x):
+    return np.where(x > 0, x, 0)
