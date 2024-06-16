@@ -242,3 +242,6 @@ def softplus(x):
 
 def leaky_relu(x, alpha=1e-1):
     return np.where(x>=0, x, alpha*x)
+
+def elu(x, alpha=1): 
+    return np.where(x>=0, x, alpha*(np.exp(x) - 1))
