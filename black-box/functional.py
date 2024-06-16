@@ -239,3 +239,6 @@ def gaussian(x):
 
 def softplus(x): 
     return np.log2(1 + np.exp(x))
+
+def leaky_relu(x, alpha=1e-1):
+    return np.where(x>=0, x, alpha*x)
