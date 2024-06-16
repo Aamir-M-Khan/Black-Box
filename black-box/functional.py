@@ -218,4 +218,7 @@ def transposed_conv3d(volume, kernel, stride=1, padding=0):
         result = padded_result
 
     return result
-    
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
