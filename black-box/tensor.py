@@ -44,6 +44,9 @@ class Tensor:
     def __truediv__(self, other):
         return Div()(self, ensure_variable(other))
 
+    def mean(self, axis=None):
+        return Mean(axis)(self)
+    
     # def sum(self, dim):
     #     return Sum.forward(self, dim)
     
@@ -144,31 +147,16 @@ class ConstPow(Operation):
         a.grad += self.power * (a.data ** (self.power - 1)) * output.grad
 
 class Mean(Operation):
-    def __init__(self, axis=None, keep_dims=False):
+    def __init__(self, axis=None):
         self.axis = axis
-        self.keep_dims = keep_dims
 
     def forward(self, a):
-        self.input_shape = a.shape
-        return np.mean(a, axis=self.axis, keep_dims=self.keep_dims)
+        return np.mean(a, axis=self.axis)
     
     def backward(self, output):
         a = self.inputs
-        grad = output.grad / np.prod(a.shape) if self.axis is None else 
-
-class Mean(Operation):
-    def __init__(self, axis=None, keepdims=False):
-        self.axis = axis
-        self.keepdims = keepdims
-
-    def forward(self, a):
-        self.input_shape = a.shape
-        return np.mean(a, axis=self.axis, keepdims=self.keepdims)
-    
-    def backward(self, output):
-        a, = self.inputs
-        grad = output.grad / np.prod(a.shape) if self.axis is None else output.grad / np.prod([a.shape[i] for i in range(len(a.shape)) if i in (self.axis if isinstance(self.axis, tuple) else [self.axis])])
-        a.grad += np.broadcast_to(grad, a.shape)
+        grad = output.grad / np.prod(a.shape)
+        a.grad += np.broadcast_to(grad, a.data.shape)
 
 class Clip(Operation):
     def __init__(self, min_val, max_val):
@@ -214,7 +202,7 @@ class Where(Operation):
     def backward(self, output):
         condition, x, y = self.inputs
         condition_grad = np.zeros_like(condition.data)
-        
+
         x_grad = np.where(condition.data, output.grad, 0)
         y_grad = np.where(~condition.data, output.grad, 0)
 
