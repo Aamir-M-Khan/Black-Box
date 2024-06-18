@@ -143,6 +143,47 @@ class ConstPow(Operation):
         a, = self.inputs
         a.grad += self.power * (a.data ** (self.power - 1)) * output.grad
 
+class Mean(Operation):
+    def __init__(self, axis=None, keep_dims=False):
+        self.axis = axis
+        self.keep_dims = keep_dims
+
+    def forward(self, a):
+        self.input_shape = a.shape
+        return np.mean(a, axis=self.axis, keep_dims=self.keep_dims)
+    
+    def backward(self, output):
+        a = self.inputs
+        grad = output.grad / np.prod(a.shape) if self.axis is None else 
+
+class Mean(Operation):
+    def __init__(self, axis=None, keepdims=False):
+        self.axis = axis
+        self.keepdims = keepdims
+
+    def forward(self, a):
+        self.input_shape = a.shape
+        return np.mean(a, axis=self.axis, keepdims=self.keepdims)
+    
+    def backward(self, output):
+        a, = self.inputs
+        grad = output.grad / np.prod(a.shape) if self.axis is None else output.grad / np.prod([a.shape[i] for i in range(len(a.shape)) if i in (self.axis if isinstance(self.axis, tuple) else [self.axis])])
+        a.grad += np.broadcast_to(grad, a.shape)
+
+class Clip(Operation):
+    def __init__(self, min_val, max_val):
+        self.min_val = min_val
+        self.max_val = max_val
+
+    def forward(self, a):
+        self.mask = (a >= self.min_val) & (a <= self.max_val)
+        return np.clip(a, self.min_val, self.max_val)
+    
+    def backward(self, output):
+        a = self.inputs
+        a.grad += self.mask * output.grad
+
+       
 # class Neg(Operation):
 #     @staticmethod
 #     def forward(a):
