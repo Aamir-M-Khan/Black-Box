@@ -194,7 +194,19 @@ class Reshape(Operation):
     def backward(self, output):
         a = self.inputs
         a.grad += np.reshape(output.grad, self.orignal_shape)
-              
+
+class Squeeze(Operation):
+    def __init__(self, axis=None):
+        self.axis = axis
+
+    def forward(self, a): 
+        self.orignal_shape = a.shape
+        return np.squeeze(a, axis=self.axis) 
+    
+    def backward(self, output):
+        a = self.inputs
+        a.grad += np.reshape(output.grad, self.orignal_shape)
+        
 # class Neg(Operation):
 #     @staticmethod
 #     def forward(a):
