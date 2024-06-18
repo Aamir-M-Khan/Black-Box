@@ -183,7 +183,18 @@ class Clip(Operation):
         a = self.inputs
         a.grad += self.mask * output.grad
 
-       
+class Reshape(Operation):
+    def __init__(self, shape) -> None:
+        self.shape = shape
+
+    def forward(self, a):
+        self.orignal_shape = a.shape
+        return np.reshape(a, self.shape)
+
+    def backward(self, output):
+        a = self.inputs
+        a.grad += np.reshape(output.grad, self.orignal_shape)
+              
 # class Neg(Operation):
 #     @staticmethod
 #     def forward(a):
