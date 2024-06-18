@@ -206,7 +206,21 @@ class Squeeze(Operation):
     def backward(self, output):
         a = self.inputs
         a.grad += np.reshape(output.grad, self.orignal_shape)
+
+class Where(Operation):
+    def forward(self, condition, x, y):
+        return np.where(condition, x, y)
+
+    def backward(self, output):
+        condition, x, y = self.inputs
+        condition_grad = np.zeros_like(condition.data)
         
+        x_grad = np.where(condition.data, output.grad, 0)
+        y_grad = np.where(~condition.data, output.grad, 0)
+
+        x.grad += x_grad
+        y.grad += y_grad
+
 # class Neg(Operation):
 #     @staticmethod
 #     def forward(a):
