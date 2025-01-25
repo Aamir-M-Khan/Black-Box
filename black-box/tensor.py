@@ -93,7 +93,6 @@ class Add(Operation):
         a.grad += output.grad
         b.grad += output.grad
 
-
 class Sub(Operation):
     @staticmethod
     def forward(a, b):

@@ -150,7 +150,7 @@ class Dropout(Module):
 
     def forward(self, input, training=True):
         if training:
-            self.mask = np.random.binomial(1, 1 - self.p, size=input.shape) / (1- self.p)
+            self.mask = np.random.binomial(1, 1 - self.p, size=input.shape) / (1 - self.p)
             return input * self.mask
         else:
             return input
